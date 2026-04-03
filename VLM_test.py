@@ -29,10 +29,11 @@ model = model.to(device)
 messages = [
     { "role": "user" , "content": [
             {"type": "image"},
-            {"type": "text", "text": "You're part of an autonomous robot."
-                                    "Look at this image and reply in exactly this format:\n"
-                                    "VLM Output: <brief description of what is visible and any hazard>\n"
-                                    "Action: <brief robot action>"} ]
+            {"type": "text", "text":"Analyse this image for a robot.\n"
+                                    "Describe the scene briefly and decide an action.\n"
+                                    "Only output:\n"
+                                    "VLM Output: <scene description>\n"
+                                     "Action: <forward, left, right, stop>"} ]
     }
 ]
 
@@ -50,7 +51,7 @@ inputs = {k: v.to(device) for k, v in inputs.items()}
 #timing
 start_time = time.time()
 with torch.no_grad():
-    generated_ids = model.generate(**inputs, max_new_tokens=60)
+    generated_ids = model.generate(**inputs, max_new_tokens=40)
 end_time = time.time()
 
 #decoding the response from the model
