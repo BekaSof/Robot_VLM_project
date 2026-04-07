@@ -1,0 +1,133 @@
+timestamp,frame_filename,ground_truth,model_output,command,predicted_label,correct,latency,,,average latency
+07/04/2026 08:38,frame_1775547517.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,3.59,,,1.746136364
+07/04/2026 08:38,frame_1775547522.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.38,,,
+07/04/2026 08:38,frame_1775547525.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.33,,,
+07/04/2026 08:38,frame_1775547528.jpg,,"Description: The robot is approaching a room with a red carpet.
+Hazard: There is a green shelf with various items on it.
+Suggested Action: Stop.",STOP,BLOCKED,,2.69,,,
+07/04/2026 08:38,frame_1775547531.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.42,,,
+07/04/2026 08:38,frame_1775547534.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.43,,,
+07/04/2026 08:38,frame_1775547537.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.39,,,
+07/04/2026 08:39,frame_1775547540.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.38,,,
+07/04/2026 08:39,frame_1775547543.jpg,,"Description: forward
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.4,,,
+07/04/2026 08:39,frame_1775547546.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.76,,,
+07/04/2026 08:39,frame_1775547549.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.52,,,
+07/04/2026 08:39,frame_1775547552.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.8,,,
+07/04/2026 08:39,frame_1775547555.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.57,,,
+07/04/2026 08:39,frame_1775547558.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.46,,,
+07/04/2026 08:39,frame_1775547561.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.52,,,
+07/04/2026 08:39,frame_1775547564.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.52,,,
+07/04/2026 08:39,frame_1775547568.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.44,,,
+07/04/2026 08:39,frame_1775547571.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.49,,,
+07/04/2026 08:39,frame_1775547574.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.52,,,
+07/04/2026 08:39,frame_1775547577.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.39,,,
+07/04/2026 08:39,frame_1775547580.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.41,,,
+07/04/2026 08:39,frame_1775547583.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.51,,,
+07/04/2026 08:39,frame_1775547586.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a person standing in the background.
+Suggested Action: Stop",STOP,BLOCKED,,2.26,,,
+07/04/2026 08:39,frame_1775547589.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.4,,,
+07/04/2026 08:39,frame_1775547592.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.41,,,
+07/04/2026 08:39,frame_1775547595.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a person standing in the background.
+Suggested Action: Stop",STOP,BLOCKED,,2.21,,,
+07/04/2026 08:40,frame_1775547598.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a person standing in the background.
+Suggested Action: Stop",STOP,BLOCKED,,2.31,,,
+07/04/2026 08:40,frame_1775547601.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a person standing on the carpet.
+Suggested Action: Stop",STOP,BLOCKED,,2.18,,,
+07/04/2026 08:40,frame_1775547604.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a person standing on the carpet.
+Suggested Action: Stop",STOP,BLOCKED,,2.29,,,
+07/04/2026 08:40,frame_1775547607.jpg,,"Description: The robot is approaching a red carpet.
+Hazard: There is a person standing on the carpet.
+Suggested Action: Stop",STOP,BLOCKED,,2.13,,,
+07/04/2026 08:40,frame_1775547610.jpg,,"Description: The robot is approaching a red carpet.
+Hazard: None.
+Suggested Action: Forward.",FORWARD,CLEAR,,1.78,,,
+07/04/2026 08:40,frame_1775547613.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a person standing on the carpet.
+Suggested Action: Stop",STOP,BLOCKED,,2.38,,,
+07/04/2026 08:40,frame_1775547616.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.3,,,
+07/04/2026 08:40,frame_1775547619.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a person standing on the carpet.
+Suggested Action: Stop",STOP,BLOCKED,,2.17,,,
+07/04/2026 08:40,frame_1775547623.jpg,,"Description: The robot is approaching a red carpet.
+Hazard: There is a person standing on the carpet.
+Suggested Action: Stop",STOP,BLOCKED,,2.1,,,
+07/04/2026 08:40,frame_1775547626.jpg,,"Description: The robot is approaching a red carpet.
+Hazard: There is a person standing on the carpet.
+Suggested Action: Stop",STOP,BLOCKED,,2.07,,,
+07/04/2026 08:40,frame_1775547629.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.32,,,
+07/04/2026 08:40,frame_1775547632.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.66,,,
+07/04/2026 08:40,frame_1775547635.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.63,,,
+07/04/2026 08:40,frame_1775547638.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.6,,,
+07/04/2026 08:40,frame_1775547641.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.52,,,
+07/04/2026 08:40,frame_1775547644.jpg,,"Description: clear
+Hazard: none
+Suggested Action: forward",FORWARD,CLEAR,,1.36,,,
+07/04/2026 08:40,frame_1775547647.jpg,,"Description: The robot is approaching a red carpeted floor.
+Hazard: There is a green object on the floor.
+Suggested Action: Stop",STOP,BLOCKED,,2.27,,,
+07/04/2026 08:40,frame_1775547650.jpg,,"Description: No hazards detected
+Hazard: None
+Suggested Action: Forward",FORWARD,CLEAR,,1.56,,,

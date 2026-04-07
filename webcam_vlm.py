@@ -7,7 +7,9 @@ from transformers import AutoProcessor, AutoModelForImageTextToText
 from PIL import Image
 
 MODEL_NAME = "HuggingFaceTB/SmolVLM2-2.2B-Instruct"
-PHONE_STREAM_URL = (0)   #"http://...:8080/video"
+PHONE_STREAM_URL = (0)     #"http://172.20.10.13:8080/video"
+SERIAL_PORT = "COM8"   # change this if needed
+BAUD_RATE = 9600
 
 # setting up the device
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -27,30 +29,58 @@ model = AutoModelForImageTextToText.from_pretrained(
 model.eval()
 print("Model loaded successfully.")
 
-ser = serial.Serial("COM8", 9600, timeout=1)
-time.sleep(2) #wait to connect
-print("Serial connection established.")
+#serial connection to arduino
+try:
+    ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+    time.sleep(2) #wait to connect
+    print("Serial connection established.")
+except Exception as e:
+    print(f"Error connecting to serial port: {e}")
+    ser = None
+
+def send_robot_command(command: str):
+    command = command.strip().upper()
+    if command not in {"FORWARD", "BACK", "LEFT", "RIGHT", "STOP"}:
+        command = "STOP"
+
+    try:
+        ser.write((command + "\n").encode("utf-8"))
+        print(f"Sent command to Arduino: {command}")
+    except Exception as e:
+        print(f"Error sending command to Arduino: {e}")
+
+#write to csv file for logging
+log_file = open("vlm_log.csv", "w", newline="", encoding="utf-8")
+log_writer = csv.writer(log_file)
+log_writer.writerow([
+    "timestamp",
+    "frame_filename",
+    "ground_truth",
+    "model_output",
+    "command",
+    "predicted_label",
+    "correct",
+    "latency"
+])
 
 # prompt - describes the scene in detail for navigation
 prompt_text ="""
 You are the perception module for a small autonomous inspection robot.
-Analyse the scene in front of the robot.
-Focus only on:
-- the immediate path ahead
-- visible safety hazards such as spills, cables, obstacles, or trip hazards
-- the best direction for the robot
-
-Ignore distant background objects unless they block the path.
+Analyse only the robot's immediate path ahead.
+Ignore distant background objects and only focus on what is near the robot and relevant for movement.
 
 Return exactly in this format:
-
-Description: <one short sentence>
-Hazard: <none / spill / cable / obstacle / trip hazard / person / wall / unknown>
+Description: <one very short sentence>
+Hazard: <none / obstacle / cable / trip hazard / person / wall / unknown>
 Suggested Action: <forward / left / right / stop>
+
+Rules:
+- If the centre path is clear, choose forward.
+- If the path is unsafe or uncertain, choose stop.
 """
 
 #adding in decision logic - lighten load on the model by asking it to describe the scene
-def get_command(vlm_output):
+def get_command(vlm_output: str) -> str:
     text = vlm_output.lower()
 
     if "suggested action:" in text:
@@ -64,6 +94,15 @@ def get_command(vlm_output):
             return "FORWARD"
         else:
             return "STOP"  # defaults to stop in the display, safe option if unsure
+    
+    # fallback if format is imperfect
+    if "left" in text:
+        return "LEFT"
+    elif "right" in text:
+        return "RIGHT"
+    elif "forward" in text:
+        return "FORWARD"
+    return "STOP"
 
 # open webcam - in this case using the pphone webcam stream via IP, but could be easily switched to a local webcam by changing the source in VideoCapture to 0 or 1 etc depending on your system
 cap = cv2.VideoCapture(PHONE_STREAM_URL)
@@ -85,6 +124,8 @@ test_results = []
 print("Starting webcam loop. Press 'q' or 'esc' to quit.")
 
 while True:
+    for _ in range(2):
+        cap.grab()
     ret, frame = cap.read()
     if not ret:
         print("Failed to grab frame.")
@@ -96,8 +137,13 @@ while True:
     if time_since_last >= inference_interval:
         try: #frame edits
             h, w, _ = frame.shape
-            cropped = frame[int(h*0.5):h, int(w*0.15):int(w*0.85), :]  # crop to bottom half of the frame
+            #cropping the area of the frame that gets read
+            cropped = frame[int(h*0.5):h, int(w*0.2):int(w*0.8), :]  # crop to bottom half of the frame
+            #save a frame every capture
+            frame_filename = f"frame_{int(time.time())}.jpg"
+            cv2.imwrite(frame_filename, cropped)
             # convert opencv frame to PIL for the model
+            cropped = cv2.resize(cropped, (320,240)) #resize to 320x240 for the model
             image = Image.fromarray(cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB))
 
             messages = [
@@ -107,7 +153,11 @@ while True:
                 ]}
             ]
 
-            prompt = processor.apply_chat_template(messages, add_generation_prompt=True)
+            prompt = processor.apply_chat_template(
+                messages,
+                add_generation_prompt=True,
+                tokenize=False
+            )
 
             inputs = processor(
                 text=prompt,
@@ -119,7 +169,7 @@ while True:
 
             start_time = time.time()
             with torch.no_grad():
-                generated_ids = model.generate(**inputs, max_new_tokens=60, do_sample=False)
+                generated_ids = model.generate(**inputs, max_new_tokens=40,do_sample=False)
             end_time = time.time()
 
             # only decode the new tokens, not the whole prompt
@@ -130,8 +180,9 @@ while True:
             latencies.append(latency)
 
             command = get_command(output)
-            predicted_label = "CLEAR" if command == "FORWARD" else "BLOCKED"
+            predicted_label = "BLOCKED" if command == "STOP" else "CLEAR"
 
+            correct = ""
             if current_ground_truth is not None: #testing mode, we have a ground truth to compare to
                 correct = (predicted_label == current_ground_truth)
                 test_results.append({
@@ -141,23 +192,24 @@ while True:
                     "latency": latency,
                     "output": output
                 })
-
+            if len(test_results) > 0:
                 accuracy = sum(1 for r in test_results if r["correct"]) / len(test_results)
                 print(f"Ground truth: {current_ground_truth} | Predicted: {predicted_label} | Correct: {correct}")
                 print(f"Accuracy so far: {accuracy:.2%}")
 
+            log_writer.writerow([
+                time.strftime("%Y-%m-%d %H:%M:%S"),
+                frame_filename,
+                current_ground_truth if current_ground_truth is not None else "",
+                output,
+                command,
+                predicted_label,
+                correct,
+                f"{latency:.2f}"
+            ])
+            log_file.flush()
+
             latest_command = command
-            try:
-                ser.write((command + "\n").encode("utf-8"))
-                print(f"Sent command to Arduino: {command}")
-
-                time.sleep(0.5) #robot moves a bit
-
-                ser.write("STOP\n".encode("utf-8")) #stop after moving to give the model time to process the new scene and avoid sending too many commands in a row
-                print("Sent STOP command to Arduino")
-            except Exception as e:
-                print(f"Error: {e}")
-
             latest_output = output
             last_inference_time = now
 
@@ -165,7 +217,11 @@ while True:
             print(output)
             print(f"Command: {command}")
             print(f"Inference time: {latency:.2f} seconds")
-            print(f"Average Latency so far: {sum(latencies)/len(latencies):.2f} seconds")
+
+            if len(latencies) > 0:
+                avg_latency = sum(latencies) / len(latencies)  
+                print(f"Average Latency so far: {avg_latency:.2f} seconds")
+                send_robot_command(command)
 
         except Exception as e:
             latest_output = f"Error: {str(e)}"
@@ -175,6 +231,7 @@ while True:
     # wrap text across multiple lines so it doesnt go off screen
     words = latest_output.split()
     lines, current_line = [], ""
+
     for word in words:
         test = f"{current_line} {word}".strip()
         (w, _), _ = cv2.getTextSize(test, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 2)
@@ -183,6 +240,7 @@ while True:
             current_line = word
         else:
             current_line = test
+
     if current_line:
         lines.append(current_line)
 
@@ -200,9 +258,14 @@ while True:
     elif key == ord('b'):
         current_ground_truth = "BLOCKED"
         print("Truth set to BLOCKED")
+    elif key == ord("n"):
+        current_ground_truth = None
+        print("Ground truth cleared")
     elif key == ord('q') or key == 27:  # 'q' or ESC to quit
         print("Quitting...")
         break
 
 cap.release()
+log_file.close()
+ser.close()
 cv2.destroyAllWindows()
